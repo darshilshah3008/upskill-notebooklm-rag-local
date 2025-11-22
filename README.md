@@ -1,22 +1,22 @@
-📘 upskill-notebooklm-rag-local
+# 📘 **upskill-notebooklm-rag-local**
 
-A fully local, privacy-friendly NotebookLM-style RAG system using Ollama, FAISS, and Python.
+A fully local, privacy-friendly **NotebookLM-style RAG system** using **Ollama**, **FAISS**, and **Python**.  
+No cloud. No API keys. 100% offline.
 
-🚀 Features
+---
 
-100% local (no internet required)
+## 🚀 **Features**
+- 100% local (no internet required)  
+- PDF → Text → Chunks → Embeddings → Answers  
+- OCR fallback for scanned PDFs  
+- Semantic search powered by **FAISS**  
+- Local LLM answering using **Ollama**  
+- Beginner-friendly modular code  
 
-PDF → Text → Chunks → Embeddings → Answers
+---
 
-OCR fallback for scanned PDFs
-
-Semantic search using FAISS
-
-Local LLM answering using Ollama
-
-Beginner-friendly workflow
-
-📁 Project Structure
+## 📁 **Project Structure**
+```
 upskill-notebooklm-rag-local/
 │
 ├── data/
@@ -26,166 +26,180 @@ upskill-notebooklm-rag-local/
 ├── ingest.py          # Extract text, OCR, chunking
 ├── embedding.py       # Embedding + FAISS index builder
 ├── search.py          # Retriever (semantic search)
-├── rag.py             # Main NotebookLM-style chat
+├── rag.py             # NotebookLM-style chat interface
 ├── utils.py           # Ollama config + chat/embedding utilities
 ├── requirements.txt
 └── README.md
+```
 
-🧩 Requirements
-Software
+---
 
-Python 3.10+
+## 🧩 **Requirements**
 
-Ollama installed → https://ollama.com/download
+### **Software**
+- Python **3.10+**  
+- Ollama → https://ollama.com/download  
 
-Hardware Notes
+### **Hardware Notes**
+- **16GB RAM is enough to load a 7B model (Q4)**  
+  but **CPU-only inference will be slow**.  
+- For fast performance:
+  - NVIDIA GPU (RTX 20/30/40 series)  
+  - Apple Silicon (M1/M2/M3)  
+  - Jetson Orin Nano / Orin NX  
+- For CPU-only laptops, use smaller models:
+  ```
+  qwen2.5:3b-instruct
+  phi3:mini
+  tinyllama:1.1b
+  ```
+- **32GB+ RAM recommended** for smooth ingestion & large PDFs.
 
-16GB RAM is enough to load a 7B model (Q4 quantized)
-but CPU-only inference will be slow (0.5–2 tokens/sec).
+---
 
-For fast performance, use:
-
-NVIDIA GPU (RTX 20/30/40 series)
-
-Apple Silicon (M1/M2/M3)
-
-Jetson Orin Nano / Orin NX
-
-For CPU-only laptops, use smaller models:
-
-qwen2.5:3b-instruct
-phi3:mini
-tinyllama:1.1b
-
-
-32GB+ RAM recommended for handling large PDFs smoothly.
-
-⚙️ Installation
+## ⚙️ **Installation**
+```
 git clone your-repo-url
 cd upskill-notebooklm-rag-local
 python -m venv .venv
+```
 
-# Windows
-. .venv/Scripts/activate  
+### Windows
+```
+. .venv/Scripts/activate
+```
 
-# macOS / Linux
+### macOS / Linux
+```
 source .venv/bin/activate
+```
 
+### Install dependencies
+```
 pip install -r requirements.txt
+```
 
-🧠 Install Ollama Models
-Answering Model (LLM)
+---
+
+## 🧠 **Install Ollama Models**
+
+### Answering Model (LLM)
+```
 ollama pull mistral
+```
 
+Why?  
+✔ Good RAG quality  
+✔ Offline  
+✔ Strong reasoning  
 
-Why?
-✔ Good quality
-✔ Strong for RAG
-✔ Works offline
+❗ *Note:* Slow on CPU laptops.
 
-❗ Note: Mistral 7B is slow on CPU-only laptops.
-
-Faster alternatives:
-
+### Faster models:
+```
 ollama pull qwen2.5:3b-instruct
 ollama pull phi3:mini
+```
 
-Embedding Model
+---
+
+### Embedding Model
+```
 ollama pull nomic-embed-text
+```
 
+Why?  
+✔ Fast  
+✔ Lightweight  
+✔ Excellent for semantic search  
 
-Why?
-✔ Fast
-✔ Lightweight
-✔ Excellent for semantic PDF search
-
-Embedding model → creates text vectors
-LLM → generates final answers
+Embedding → creates vectors  
+LLM → generates answers  
 
 Both are required.
 
-📥 Add Your PDFs
+---
 
+## 📥 **Add Your PDFs**
 Place your documents into:
-
+```
 data/pdfs/
+```
 
+---
 
-Supports text PDFs, scanned PDFs (OCR), and large manuals.
+## 🏗️ **Build FAISS Index**
+*(One-time per PDF set)*
 
-🏗️ Build FAISS Index (One-time per new PDF set)
+```
 python rag.py --ingest
+```
 
+This will:
+- Extract text  
+- Perform OCR  
+- Chunk the text  
+- Generate embeddings  
+- Build FAISS index  
 
-This process:
-
-Extracts text
-
-Runs OCR if needed
-
-Splits text into chunks
-
-Generates embeddings
-
-Builds FAISS vector index
-
-Index files are stored in:
-
+Stored in:
+```
 data/index/
+```
 
-💬 Start Asking Questions
+---
+
+## 💬 **Start Asking Questions**
+```
 python rag.py
+```
 
-
-Example queries:
-
+Example usage:
+```
 Q> What is this PDF about?
 Q> Summarize page 3.
-Q> What are the steps of this project?
+Q> What are the steps in this section?
 Q> exit
+```
 
-🔧 Troubleshooting
-❗ TimeoutError
+---
 
-Use a smaller LLM:
+## 🔧 **Troubleshooting**
 
-ollama pull qwen2.5:3b-instruct
-
-
+### TimeoutError
+Use a smaller model:
+```
+qwen2.5:3b-instruct
+```
 Or set:
-
+```
 timeout=None
+```
+in `utils.py`.
 
-
-inside utils.py.
-
-❗ Slow Answers
-
+### Slow responses?
 Use:
-
+```
 qwen2.5:3b-instruct
 phi3:mini
+```
 
-❗ Need Better Quality?
-
+### Need higher quality?
 Use:
-
+```
 qwen2.5:7b-instruct
 llama3.1:8b-instruct
+```
 
-🏁 Conclusion
+---
 
-Your fully local NotebookLM-style RAG system is ready.
-Just add PDFs → ingest → chat.
+## 🏁 **Conclusion**
+Your fully local **NotebookLM-style RAG system** is ready.  
+Add PDFs → Ingest → Chat.
 
-Ideal for:
-
-Engineering manuals
-
-Embedded & automotive documents
-
-Research papers
-
-Books & tutorials
-
-Private knowledge bases
+Perfect for:
+- Engineering manuals  
+- Embedded & automotive docs  
+- Research papers  
+- Books & tutorials  
+- Private knowledge bases  
